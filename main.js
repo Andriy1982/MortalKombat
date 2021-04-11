@@ -8,7 +8,7 @@ const player1 = {
     img: "http://reactmarathon-api.herokuapp.com/assets/kitana.gif",
     weapon: ["qqq", "www", "eee"],
     attack() {console.log(`${this.name} Fight...`);}
-}
+};
 
 const player2 = {
     player: 2,
@@ -17,7 +17,7 @@ const player2 = {
     img: "http://reactmarathon-api.herokuapp.com/assets/subzero.gif",
     weapon: ["qqq", "www", "eee"],
     attack() {console.log(`${this.name} Fight...`);}
-}
+};
 
 const createElement = (tag, className) => {
     const $el = document.createElement(tag);
@@ -46,20 +46,52 @@ const createPlayer = ({player, name, hp, img}) => {
    return $player1;
 };
 
-const changeHp = (player) => {
-  const $playerLife = document.querySelector(`.player${player.player} .life`);
-  console.log(player);
-  console.log($playerLife);
-  if (player.hp >= 0 )
-  player.hp -= 10 
-  console.log(player.hp);
-  $playerLife.style.width = `${player.hp}%`
+const createRandomHP = (number) =>  {
+   return Math.ceil( Math.random() * number)
+};
+
+const playerWin = (name) => {
+    const $winTitle = createElement('div', 'loseTitle');
+    if (name) {$winTitle.innerText = `${name} win`} else {
+      $winTitle.innerText = 'dead heat'
+    };
+    return $winTitle;
 }
 
+const changeHp = (player) => {
+  const $playerLife = document.querySelector(`.player${player.player} .life`);
+  player.hp -= createRandomHP(20);
+  if (player.hp <= 0 ) {
+  player.hp = 0
+};
+  $playerLife.style.width = `${player.hp}%`;
+};
+
+const winner = (firstPlayer, secondPlayer) => {
+  changeHp(firstPlayer)
+  changeHp(secondPlayer)
+
+  if (firstPlayer.hp <= 0 && secondPlayer.hp <= 0) {
+    $arenas.appendChild( playerWin());
+    $randomBtn.disabled = true;
+    return;
+  }
+  if (firstPlayer.hp <= 0 ) {
+    $arenas.appendChild( playerWin(secondPlayer.name));
+    $randomBtn.disabled = true;
+    return;
+  }
+
+  if (secondPlayer.hp <= 0 ) {
+    $arenas.appendChild( playerWin(firstPlayer.name));
+    $randomBtn.disabled = true;
+    return;
+  };
+};
+
 $randomBtn.addEventListener('click', ()=> {
-    changeHp(player1)
-    changeHp(player2)
-})
+  winner(player1, player2);
+});
 
 
 $arenas.appendChild(createPlayer( player1));
